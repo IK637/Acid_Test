@@ -31,14 +31,18 @@ public class AcidTest {
 				try {
 					// create statement object
 					connectionStatement = conn.createStatement();
-					System.out.println("creating statement");
+					System.out.println("Statement Created");
 					
-					// Maybe a table student1 exists, maybe not
-					connectionStatement.executeUpdate("CREATE TABLE employees (Id integer, Name varchar(10), primary key(Id)");
+					// Attempts to create a table called employees, but one already exists so nothing gets committed
+					
+					connectionStatement.executeUpdate("CREATE TABLE employees (Id integer, First_Name varchar(15), Last_Name varchar(15), primary key(Id))");
+					
+					//Attempts to create a table called students, one does not already exit so it is created
+					
+					connectionStatement.executeUpdate("CREATE TABLE students (Id integer, First_Name varchar(15), Last_Name varchar(15), primary key(Id))");
 					
 					// Either the 2 following inserts are executed, or none of them are. This is atomicity.
-
-				         
+     
 					final String firstName = "Stacy"; 
 					final String lastName = "Johnson";
 					final String firstName2 = "John";
@@ -46,13 +50,14 @@ public class AcidTest {
 					
 					connectionStatement.executeUpdate("INSERT INTO employees (Employee_Id, FirstName, LastName, Age, Salary) VALUES (11111, '"+firstName+"','"+lastName+"', 20, 11111)");
 					connectionStatement.executeUpdate("INSERT INTO employees (Employee_Id, FirstName, LastName, Age, Salary) VALUES (22215, '"+firstName2+"','"+lastName2+"', 29, 60000)");
+					
 					System.out.println("values added");
 				} catch (SQLException e) {
 					System.out.println("catch Exception");
 					// For atomicity
 					conn.rollback();
 					connectionStatement.close();
-					//conn.close();
+					conn.close();
 					return;
 				} // main
 				conn.commit();
