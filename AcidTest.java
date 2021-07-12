@@ -6,6 +6,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.PreparedStatement;
 public class AcidTest {
+	
+	//By Mudassir Ali and Ileana Kennedy
 
 	public static void main(String args[]) throws SQLException, IOException, ClassNotFoundException{
 		
@@ -21,10 +23,10 @@ public class AcidTest {
 						.getConnection(url,user,password);
 				System.out.println("Connected");
 				
-				// For atomicity
+				// For Atomicity
 				conn.setAutoCommit(false);
 				
-				// For isolation 
+				// For Isolation 
 				conn.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE); 
 				
 				Statement connectionStatement = null;
@@ -48,18 +50,23 @@ public class AcidTest {
 					final String firstName2 = "John";
 					final String lastName2 = "Davis";
 					
+					//At first we try to add two rows with the same Employee_Id, but the ID must be unique, so the changes don't go though. This is consistency 
+					
 					connectionStatement.executeUpdate("INSERT INTO employees (Employee_Id, FirstName, LastName, Age, Salary) VALUES (11111, '"+firstName+"','"+lastName+"', 20, 11111)");
-					connectionStatement.executeUpdate("INSERT INTO employees (Employee_Id, FirstName, LastName, Age, Salary) VALUES (22215, '"+firstName2+"','"+lastName2+"', 29, 60000)");
+					connectionStatement.executeUpdate("INSERT INTO employees (Employee_Id, FirstName, LastName, Age, Salary) VALUES (11111, '"+firstName2+"','"+lastName2+"', 29, 60000)");
 					
 					System.out.println("values added");
 				} catch (SQLException e) {
 					System.out.println("catch Exception");
-					// For atomicity
+					
+					// For Atomicity
 					conn.rollback();
 					connectionStatement.close();
 					conn.close();
 					return;
-				} // main
+				} 
+				
+				//for Durability
 				conn.commit();
 				connectionStatement.close();
 				conn.close();	
@@ -67,3 +74,5 @@ public class AcidTest {
 		
 	}
 }
+
+
