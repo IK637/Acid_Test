@@ -1,3 +1,5 @@
+package pace;
+
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -5,74 +7,76 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.PreparedStatement;
+
 public class AcidTest {
-	
-	//By Mudassir Ali and Ileana Kennedy
 
-	public static void main(String args[]) throws SQLException, IOException, ClassNotFoundException{
-		
-		String url       = "jdbc:mysql://localhost:3306/acidtest?autoReconnect=true&useSSL=false";
-		String user      = "root";
-		String password  = "123456";
-		 
-		// Load the MySQL driver
-				Class.forName("com.mysql.jdbc.Driver");
+	//by Mudassir Ali and Ileana Kennedy
 
-				// Connect to the database
-				Connection conn = DriverManager
-						.getConnection(url,user,password);
-				System.out.println("Connected");
-				
-				// For Atomicity
-				conn.setAutoCommit(false);
-				
-				// For Isolation 
-				conn.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE); 
-				
-				Statement connectionStatement = null;
-				try {
-					// create statement object
-					connectionStatement = conn.createStatement();
-					System.out.println("Statement Created");
-					
-					// Attempts to create a table called employees, but one already exists so nothing gets committed
-					
-					connectionStatement.executeUpdate("CREATE TABLE employees (Id integer, First_Name varchar(15), Last_Name varchar(15), primary key(Id))");
-					
-					//Attempts to create a table called students, one does not already exit so it is created
-					
-					connectionStatement.executeUpdate("CREATE TABLE students (Id integer, First_Name varchar(15), Last_Name varchar(15), primary key(Id))");
-					
-					// Either the 2 following inserts are executed, or none of them are. This is atomicity.
-     
-					final String firstName = "Stacy"; 
-					final String lastName = "Johnson";
-					final String firstName2 = "John";
-					final String lastName2 = "Davis";
-					
-					//At first we try to add two rows with the same Employee_Id, but the ID must be unique, so the changes don't go though. This is consistency 
-					
-					connectionStatement.executeUpdate("INSERT INTO employees (Employee_Id, FirstName, LastName, Age, Salary) VALUES (11111, '"+firstName+"','"+lastName+"', 20, 11111)");
-					connectionStatement.executeUpdate("INSERT INTO employees (Employee_Id, FirstName, LastName, Age, Salary) VALUES (11111, '"+firstName2+"','"+lastName2+"', 29, 60000)");
-					
-					System.out.println("values added");
-				} catch (SQLException e) {
-					System.out.println("catch Exception");
+		public static void main(String args[]) throws SQLException, IOException, ClassNotFoundException{
+			
+			String url       = "jdbc:postgresql://localhost:5432/postgres";
+			String user      = "postgres";
+			String password  = "1234";
+			 
+			// Load the MySQL driver
+					Class.forName("org.postgresql.Driver");
+
+					System.out.println("Connecting Driver");
+					// Connect to the database
+					Connection conn = DriverManager.getConnection(url,user,password);
+					System.out.println("Connected");
 					
 					// For Atomicity
-					conn.rollback();
+					conn.setAutoCommit(false);
+					
+					// For Isolation 
+					conn.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE); 
+					
+					Statement connectionStatement = null;
+					try {
+						// create statement object
+						connectionStatement = conn.createStatement();
+						System.out.println("Statement Created");
+						
+						// Attempts to create a table called depot, but one already exists so nothing gets committed
+						
+						connectionStatement.executeUpdate("CREATE TABLE depot (primary key(depid), address varchar (15), quanity integer");
+						
+						// Either the 2 following inserts are executed, or none of them are. This is atomicity.
+
+	
+						//At first we try to add two rows with the same depid but the ID must be unique, so the changes don't go though. This is consistency 
+						
+						connectionStatement.executeUpdate("INSERT INTO depot(\"depid\", \"address\", \"quantity\") VALUES (1,'MONTANA',10);");
+						connectionStatement.executeUpdate("INSERT INTO depot(\"depid\", \"address\", \"quantity\") VALUES (1,'IDAHO',20);");
+						
+						connectionStatement.executeUpdate("INSERT INTO stock (\"prodid\", \"depid\", \"quantity\") VALUES (1,1,200);");
+						
+						System.out.println("values added");
+					} catch (SQLException e) {
+						System.out.println("catch Exception");
+						
+						// For Atomicity
+						conn.rollback();
+						connectionStatement.close();
+						conn.close();
+						return;
+					} 
+					
+					//for Durability
+					conn.commit();
 					connectionStatement.close();
-					conn.close();
-					return;
-				} 
-				
-				//for Durability
-				conn.commit();
-				connectionStatement.close();
-				conn.close();	
-		
-		
-	}
+					conn.close();	
+			
+			
+		}
+	
 }
+
+
+
+
+
+
 
 
