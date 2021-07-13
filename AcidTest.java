@@ -8,7 +8,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.PreparedStatement;
 
-public class AcidTest {
+public class AcidTest2 {
 
 	//by Mudassir Ali and Ileana Kennedy
 
@@ -18,7 +18,7 @@ public class AcidTest {
 			String user      = "postgres";
 			String password  = "1234";
 			 
-			// Load the MySQL driver
+			// Load the postgreSQL driver
 					Class.forName("org.postgresql.Driver");
 
 					System.out.println("Connecting Driver");
@@ -40,17 +40,34 @@ public class AcidTest {
 						
 						// Attempts to create a table called depot, but one already exists so nothing gets committed
 						
-						connectionStatement.executeUpdate("CREATE TABLE depot (primary key(depid), address varchar (15), quanity integer");
+						// Building the initial tables Depot and Product
+						
+						//connectionStatement.executeUpdate("CREATE TABLE depot (primary key(depid), address varchar (15), volume integer");
+						//connectionStatement.executeUpdate("CREATE TABLE stock (primary key(prodid,depid), address varchar (15), quanity integer");
+						
+						connectionStatement.executeUpdate("INSERT INTO depot(\"depid\", \"address\", \"volume\") VALUES (d1,'New York',9000);");
+						connectionStatement.executeUpdate("INSERT INTO depot(\"depid\", \"address\", \"volume\") VALUES (d2,'Syracuse',6000);");
+						connectionStatement.executeUpdate("INSERT INTO depot(\"depid\", \"address\", \"volume\") VALUES (d4,'New York',2000);");
+						
+						connectionStatement.executeUpdate("INSERT INTO stock(\"prodid\", \"depid\", \"quantity\") VALUES (p1,d1,1000);");
+						connectionStatement.executeUpdate("INSERT INTO stock(\"prodid\", \"depid\", \"quantity\") VALUES (p1,d2,-200);");
+						connectionStatement.executeUpdate("INSERT INTO stock(\"prodid\", \"depid\", \"quantity\") VALUES (p1,d4,1200);");
+						connectionStatement.executeUpdate("INSERT INTO stock(\"prodid\", \"depid\", \"quantity\") VALUES (p3,d1,3000);");
+						connectionStatement.executeUpdate("INSERT INTO stock(\"prodid\", \"depid\", \"quantity\") VALUES (p3,d4,2000);");
+						connectionStatement.executeUpdate("INSERT INTO stock(\"prodid\", \"depid\", \"quantity\") VALUES (p2,d4,1500);");
+						connectionStatement.executeUpdate("INSERT INTO stock(\"prodid\", \"depid\", \"quantity\") VALUES (p2,d1,-400);");
+						connectionStatement.executeUpdate("INSERT INTO stock(\"prodid\", \"depid\", \"quantity\") VALUES (p2,d2,2000);");
 						
 						// Either the 2 following inserts are executed, or none of them are. This is atomicity.
-
+						connectionStatement.executeUpdate("INSERT INTO stock (\"prodid\", \"depid\", \"quantity\") VALUES (p1,d100,100);");
+						connectionStatement.executeUpdate("INSERT INTO depot (\"depid\", \"address\", \"volume\") VALUES (d100,'Chicago',100);");
 	
-						//At first we try to add two rows with the same depid but the ID must be unique, so the changes don't go though. This is consistency 
+						//we try to add two rows with the same depid but the ID must be unique, so the changes don't go though. This is consistency 
+
+						connectionStatement.executeUpdate("INSERT INTO depot (\"depid\", \"address\", \"volume\") VALUES (d20,Chicago,100);");
+						connectionStatement.executeUpdate("INSERT INTO depot (\"depid\", \"address\", \"volume\") VALUES (d20,New York,200);");
 						
-						connectionStatement.executeUpdate("INSERT INTO depot(\"depid\", \"address\", \"quantity\") VALUES (1,'MONTANA',10);");
-						connectionStatement.executeUpdate("INSERT INTO depot(\"depid\", \"address\", \"quantity\") VALUES (1,'IDAHO',20);");
-						
-						connectionStatement.executeUpdate("INSERT INTO stock (\"prodid\", \"depid\", \"quantity\") VALUES (1,1,200);");
+
 						
 						System.out.println("values added");
 					} catch (SQLException e) {
@@ -72,5 +89,3 @@ public class AcidTest {
 		}
 	
 }
-
-
